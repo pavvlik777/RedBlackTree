@@ -1,0 +1,10 @@
+F:\Projects\RedBlackTree\RedBlackTree\RedBlackTree\bin\Debug\RedBlackTree.exe.config
+F:\Projects\RedBlackTree\RedBlackTree\RedBlackTree\bin\Debug\RedBlackTree.exe
+F:\Projects\RedBlackTree\RedBlackTree\RedBlackTree\bin\Debug\RedBlackTree.pdb
+F:\Projects\RedBlackTree\RedBlackTree\RedBlackTree\obj\Debug\RedBlackTree.csprojAssemblyReference.cache
+F:\Projects\RedBlackTree\RedBlackTree\RedBlackTree\obj\Debug\RedBlackTree.Form1.resources
+F:\Projects\RedBlackTree\RedBlackTree\RedBlackTree\obj\Debug\RedBlackTree.Properties.Resources.resources
+F:\Projects\RedBlackTree\RedBlackTree\RedBlackTree\obj\Debug\RedBlackTree.csproj.GenerateResource.cache
+F:\Projects\RedBlackTree\RedBlackTree\RedBlackTree\obj\Debug\RedBlackTree.csproj.CoreCompileInputs.cache
+F:\Projects\RedBlackTree\RedBlackTree\RedBlackTree\obj\Debug\RedBlackTree.exe
+F:\Projects\RedBlackTree\RedBlackTree\RedBlackTree\obj\Debug\RedBlackTree.pdb
