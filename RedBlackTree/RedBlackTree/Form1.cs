@@ -130,8 +130,23 @@ namespace RedBlackTree
                 MessageBox.Show("Incorrect input!", "Error");
                 return;
             }
-            //tree.RemoveNode(result);
-            RefreshTree();
+            if (TreeView.Nodes.Count == 0)
+                return;
+            TreeNode current = TreeView.Nodes[0];
+            while(current.Text != "null")
+            {
+                int data = int.Parse(current.Text);
+                if (data == result)
+                {
+                    TreeView.SelectedNode = current;
+                    TreeView.Select();
+                    return;
+                }
+                else
+                {
+                    current = data < result ? current.Nodes[0] : current.Nodes[1];
+                }
+            }
         }
 
         private void DeleteButton_Click(object sender, EventArgs e)

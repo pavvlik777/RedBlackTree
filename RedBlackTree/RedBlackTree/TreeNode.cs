@@ -250,7 +250,7 @@ namespace RedBlackTree
             if (node != null) node.parent = pivot;
         }
 
-        public void RemoveNode(int data)//пофиксить удаление
+        public void RemoveNode(int data)
         {
             m_TreeNode node = FindNode(data);
             m_TreeNode x = null;
@@ -258,7 +258,7 @@ namespace RedBlackTree
 
             if (node == null) return;
 
-            if(node.leftNode == null || node.rightNode == null)
+            if (node.leftNode == null || node.rightNode == null)
             {
                 y = node;
             }
@@ -273,7 +273,8 @@ namespace RedBlackTree
             else
                 x = y.rightNode;
 
-            x.parent = y.parent;
+            if(x != null)
+                x.parent = y.parent;
             if (y.parent != null)
             {
                 if (y == y.parent.leftNode)
@@ -286,7 +287,7 @@ namespace RedBlackTree
 
             if (y != node) node.data = y.data;
 
-            if(!y.isBlack)
+            if (!y.isBlack)
             {
                 fixNode = y;
                 FixDelete();
