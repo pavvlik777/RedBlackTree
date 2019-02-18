@@ -41,7 +41,7 @@ namespace RedBlackTree
 
         TreeNode AddNode(m_TreeNode node)
         {
-            if(node == null)
+            if (node == null)
             {
                 TreeNode newNode = new TreeNode("null");
                 newNode.BackColor = Color.Black;
@@ -50,7 +50,7 @@ namespace RedBlackTree
             else
             {
                 TreeNode newNode = new TreeNode(node.data.ToString());
-                if(node.isBlack)
+                if (node.isBlack)
                     newNode.BackColor = Color.Black;
                 else
                     newNode.BackColor = Color.Red;
@@ -114,7 +114,7 @@ namespace RedBlackTree
 
         private void AddButton_Click(object sender, EventArgs e)
         {
-            if(!CheckInput(out int result))
+            if (!CheckInput(out int result))
             {
                 MessageBox.Show("Incorrect input!", "Error");
                 return;
@@ -130,7 +130,8 @@ namespace RedBlackTree
                 MessageBox.Show("Incorrect input!", "Error");
                 return;
             }
-
+            //tree.RemoveNode(result);
+            RefreshTree();
         }
 
         private void DeleteButton_Click(object sender, EventArgs e)
@@ -140,7 +141,8 @@ namespace RedBlackTree
                 MessageBox.Show("Incorrect input!", "Error");
                 return;
             }
-
+            tree.RemoveNode(result);
+            RefreshTree();
         }
 
         private void TreeView_AfterSelect(object sender, TreeViewEventArgs e)

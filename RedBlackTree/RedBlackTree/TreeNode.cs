@@ -67,22 +67,31 @@ namespace RedBlackTree
 
         public void AddNode(int data)
         {
-            AddNode(ref root, null, data);
-        }
-
-        void AddNode(ref m_TreeNode node, m_TreeNode parent, int data)
-        {
-            if(node == null)
+            m_TreeNode current = root;
+            m_TreeNode parent = null;
+            m_TreeNode x = null;
+            while(current != null)
             {
-                node = new m_TreeNode(data, false);
-                node.parent = parent;
-                FixInsertion(ref node);
-                return;
+                parent = current;
+                if (data < current.data)
+                    current = current.leftNode;
+                else
+                    current = current.rightNode;
             }
-            if (data < node.data)
-                AddNode(ref node.leftNode, node, data);
+
+            x = new m_TreeNode(data, false);
+            x.parent = parent;
+
+            if (parent != null)
+                if (data < parent.data)
+                    parent.leftNode = x;
+                else
+                    parent.rightNode = x;
             else
-                AddNode(ref node.rightNode, node, data);
+                root = x;
+
+            fixNode = x;
+            FixInsertion();
         }
 
         m_TreeNode FindUncle(m_TreeNode node)
@@ -101,91 +110,139 @@ namespace RedBlackTree
                 return null;
         }
 
-        void FixInsertion(ref m_TreeNode node)
+        private m_TreeNode fixNode;
+        private m_TreeNode rotateNode;
+        void FixInsertion()
         {
-            if (node.parent != null) //наш узел - не корень
+            m_TreeNode node = fixNode;
+            while(node != root && !node.parent.isBlack)
             {
-                if (!node.parent.isBlack) //родитель текущего - красный
+                if(node.parent == node.parent.parent.leftNode)
                 {
                     m_TreeNode uncle = FindUncle(node);
-                    m_TreeNode grandparent = node.parent.parent;
-                    if(uncle != null && !uncle.isBlack) //дядя — красный
+                    if(uncle == null)
+                    {
+                        if (node == node.parent.rightNode)
+                        {
+                            node = node.parent;
+                            rotateNode = node;
+                            LeftRotate();
+                        }
+                        node.parent.isBlack = true;
+                        node.parent.parent.isBlack = false;
+                        rotateNode = node.parent.parent;
+                        RightRotate();
+                    }
+                    else if(!uncle.isBlack)
                     {
                         node.parent.isBlack = true;
                         uncle.isBlack = true;
-                        grandparent.isBlack = false;
-                        FixInsertion(ref grandparent);
+                        node.parent.parent.isBlack = false;
+                        node = node.parent.parent;
                     }
-                    else //дядя — черный
+                    else
                     {
-                        if(ReferenceEquals(node, node.parent.rightNode) && ReferenceEquals(node.parent, grandparent.leftNode))
+                        if(node == node.parent.rightNode)
                         {
-                            LeftRotate(ref node.parent);
-                            node = node.leftNode;
+                            node = node.parent;
+                            rotateNode = node;
+                            LeftRotate();
                         }
-                        else if (ReferenceEquals(node, node.parent.leftNode) && ReferenceEquals(node.parent, grandparent.rightNode))
-                        {
-                            RightRotate(ref node.parent);
-                            node = node.rightNode;
-                        }
-                        grandparent = node.parent.parent;
                         node.parent.isBlack = true;
-                        grandparent.isBlack = false;
-                        if (ReferenceEquals(node, node.parent.leftNode) && ReferenceEquals(node.parent, grandparent.leftNode))
-                        {
-                            RightRotate(ref grandparent);
-                        }
-                        else
-                        {
-                            LeftRotate(ref grandparent);
-                        }
+                        node.parent.parent.isBlack = false;
+                        rotateNode = node.parent.parent;
+                        RightRotate();
                     }
                 }
                 else
-                    return;
+                {
+                    m_TreeNode uncle = FindUncle(node);
+                    if (uncle == null)
+                    {
+                        if (node == node.parent.leftNode)
+                        {
+                            node = node.parent;
+                            rotateNode = node;
+                            RightRotate();
+                        }
+                        node.parent.isBlack = true;
+                        node.parent.parent.isBlack = false;
+                        rotateNode = node.parent.parent;
+                        LeftRotate();
+                    }
+                    else if (!uncle.isBlack)
+                    {
+                        node.parent.isBlack = true;
+                        uncle.isBlack = true;
+                        node.parent.parent.isBlack = false;
+                        node = node.parent.parent;
+                    }
+                    else
+                    {
+                        if (node == node.parent.leftNode)
+                        {
+                            node = node.parent;
+                            rotateNode = node;
+                            RightRotate();
+                        }
+                        node.parent.isBlack = true;
+                        node.parent.parent.isBlack = false;
+                        rotateNode = node.parent.parent;
+                        LeftRotate();
+                    }
+                }
             }
-            else
-                node.isBlack = true;
+            root.isBlack = true;
         }
 
-        void LeftRotate(ref m_TreeNode node) //удалить лишнюю связь
+        void LeftRotate()
         {
+            m_TreeNode node = rotateNode;
             m_TreeNode pivot = node.rightNode;
-            pivot.parent = node.parent;
-            if(node.parent != null)
-            {
-                if (ReferenceEquals(node.parent.leftNode, node))
-                    node.parent.leftNode = pivot;
-                else
-                    node.parent.rightNode = pivot;
-            }
 
             node.rightNode = pivot.leftNode;
-            if (pivot.leftNode != null)
-                pivot.leftNode.parent = node;
+            if (pivot.leftNode != null) pivot.leftNode.parent = node;
 
-            node.parent = pivot;
-            pivot.leftNode = node;
-        }
-
-        void RightRotate(ref m_TreeNode node) //удалить лишнюю связь
-        {
-            m_TreeNode pivot = node.leftNode;
-            pivot.parent = node.parent;
+            if (pivot != null) pivot.parent = node.parent;
             if (node.parent != null)
             {
-                if (ReferenceEquals(node.parent.leftNode, node))
+                if (node.parent.leftNode == node)
                     node.parent.leftNode = pivot;
                 else
                     node.parent.rightNode = pivot;
             }
+            else
+            {
+                root = pivot;
+            }
+
+            pivot.leftNode = node;
+            if (node != null) node.parent = pivot;
+        }
+
+        void RightRotate()
+        {
+            m_TreeNode node = rotateNode;
+            m_TreeNode pivot = node.leftNode;
 
             node.leftNode = pivot.rightNode;
-            if (pivot.rightNode != null)
-                pivot.rightNode.parent = node;
+            if (pivot.rightNode != null) pivot.rightNode.parent = node;
 
-            node.parent = pivot;
+            if (pivot != null) pivot.parent = node.parent;
+            if (node.parent != null)
+            {
+                if (node.parent.leftNode == node)
+                    node.parent.leftNode = pivot;
+                else
+                    node.parent.rightNode = pivot;
+            }
+            else
+            {
+                root = pivot;
+            }
+
             pivot.rightNode = node;
+            if (node != null) node.parent = pivot;
         }
 
         public void RemoveNode(int data)
