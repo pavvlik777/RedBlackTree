@@ -54,6 +54,14 @@ namespace RedBlackTree
         private m_TreeNode root;
         public m_TreeNode Root { get => root; }
 
+        bool IsNodeBlack(m_TreeNode node) => node == null || node.isBlack;
+        void SetNodeColor(ref m_TreeNode node, bool isBlack)
+        {
+            if (node == null)
+                return;
+            node.isBlack = isBlack;
+        }
+
         public RedBlackTree()
         {
             root = null;
@@ -73,10 +81,7 @@ namespace RedBlackTree
             while(current != null)
             {
                 parent = current;
-                if (data < current.data)
-                    current = current.leftNode;
-                else
-                    current = current.rightNode;
+                current = data < current.data ? current.leftNode : current.rightNode;
             }
 
             x = new m_TreeNode(data, false);
@@ -245,14 +250,137 @@ namespace RedBlackTree
             if (node != null) node.parent = pivot;
         }
 
-        public void RemoveNode(int data)
+        public void RemoveNode(int data)//пофиксить удаление
         {
+            m_TreeNode node = FindNode(data);
+            m_TreeNode x = null;
+            m_TreeNode y = null;
 
+            if (node == null) return;
+
+            if(node.leftNode == null || node.rightNode == null)
+            {
+                y = node;
+            }
+            else
+            {
+                y = node.rightNode;
+                while (y.leftNode != null) y = y.leftNode;
+            }
+
+            if (y.leftNode != null)
+                x = y.leftNode;
+            else
+                x = y.rightNode;
+
+            x.parent = y.parent;
+            if (y.parent != null)
+            {
+                if (y == y.parent.leftNode)
+                    y.parent.leftNode = x;
+                else
+                    y.parent.rightNode = x;
+            }
+            else
+                root = x;
+
+            if (y != node) node.data = y.data;
+
+            if(!y.isBlack)
+            {
+                fixNode = y;
+                FixDelete();
+            }
+        }
+
+        void FixDelete()
+        {
+            m_TreeNode node = fixNode;
+            while (node != root && node.isBlack)
+            {
+                if(node == node.parent.leftNode)
+                {
+                    m_TreeNode sibling = node.parent.rightNode;
+                    if(!IsNodeBlack(sibling))
+                    {
+                        SetNodeColor(ref sibling, true);
+                        SetNodeColor(ref node.parent, false);
+                        rotateNode = node.parent;
+                        LeftRotate();
+                        sibling = node.parent.rightNode;
+                    }
+                    if(IsNodeBlack(sibling.rightNode) && IsNodeBlack(sibling.leftNode))
+                    {
+                        SetNodeColor(ref sibling, false);
+                        node = node.parent;
+                    }
+                    else
+                    {
+                        if(IsNodeBlack(sibling.rightNode))
+                        {
+                            SetNodeColor(ref sibling.leftNode, true);
+                            SetNodeColor(ref sibling, false);
+                            rotateNode = sibling;
+                            RightRotate();
+                            sibling = node.parent.rightNode;
+                        }
+                        SetNodeColor(ref sibling, node.parent.isBlack);
+                        SetNodeColor(ref node.parent, true);
+                        SetNodeColor(ref sibling.rightNode, true);
+                        rotateNode = node.parent;
+                        LeftRotate();
+                        node = root;
+                    }
+                }
+                else
+                {
+                    m_TreeNode sibling = node.parent.leftNode;
+                    if (!IsNodeBlack(sibling))
+                    {
+                        SetNodeColor(ref sibling, true);
+                        SetNodeColor(ref node.parent, false);
+                        rotateNode = node.parent;
+                        RightRotate();
+                        sibling = node.parent.leftNode;
+                    }
+                    if (IsNodeBlack(sibling.rightNode) && IsNodeBlack(sibling.leftNode))
+                    {
+                        SetNodeColor(ref sibling, false);
+                        node = node.parent;
+                    }
+                    else
+                    {
+                        if (IsNodeBlack(sibling.leftNode))
+                        {
+                            SetNodeColor(ref sibling.rightNode, true);
+                            SetNodeColor(ref sibling, false);
+                            rotateNode = sibling;
+                            LeftRotate();
+                            sibling = node.parent.leftNode;
+                        }
+                        SetNodeColor(ref sibling, node.parent.isBlack);
+                        SetNodeColor(ref node.parent, true);
+                        SetNodeColor(ref sibling.leftNode, true);
+                        rotateNode = node.parent;
+                        RightRotate();
+                        node = root;
+                    }
+                }
+            }
+            node.isBlack = true;
         }
 
         public m_TreeNode FindNode(int data)
         {
-            return new m_TreeNode();
+            m_TreeNode current = root;
+            while(current != null)
+            {
+                if (current.data == data)
+                    return current;
+                else
+                    current = data < current.data ? current.leftNode : current.rightNode;
+            }
+            return null;
         }
     }
 }
